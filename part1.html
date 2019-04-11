@@ -15,7 +15,10 @@
     <body>
         <div class = "container">
             <div id = "app">
-                
+                Message: {{ message }}
+                <ol>
+                    <li v-for = "todo in todos">{{ todo.text }}</li>
+                </ol>
             </div>
         </div>
 
@@ -45,7 +48,12 @@
           el: '#app',
           data:
           {
-            
+            message: 'Hello Vue!',
+            todos:
+            [
+                { text: 'Drive to school'},
+                { text: 'Catch the bus'},
+            ]
           }
         })
        </script>
