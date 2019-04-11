@@ -15,7 +15,15 @@
  <body>
         <div class = "container">
                 <div id = "app">
-
+                  <br><h2 style = "text-align: center">Vue lab</h2><br>
+                  <h5 style = "text-align: center">Number of stops <input v-model.number = "numStops" type = "number"></h5>
+                  <div v-for = "stop in filteredStops" :key = "stop.id" class= "card" style = "text-align: center;">
+                    <div class = "card-body">
+                      <h6 class = "card-title"> {{stop.name}} </h6>
+                      <p class = "card-text"> {{stop.description}} </p>
+                      <p class = "card-text"> {{stop.distance.toFixed(5)}} miles </p>
+                    </div>
+                  </div>
                 </div>
         </div>
 
@@ -40,12 +48,79 @@
        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
        <script>
-           const app = new Vue
-           ({
-               el: '#app',
-               data:
-               {
-                   
-               }
-           })
-       </script>
+        const app = new Vue
+        ({
+            el: '#app',
+            data:
+            {
+                stops: [],
+                numStops: 10,
+                latitude: 0,
+                longitude: 0
+            },
+            computed:
+            {
+                filteredStops: function()
+                {
+                let x = stop
+                this.stops.forEach(x => x.distance = this.distance(x.lat, x.lon))
+                this.stops.sort((stop1, stop2) => {let result = stop1.distance - stop2.distance; return(result)})
+                let rValue = this.stops.slice(0, this.numStops)
+                return rValue
+                }
+            },
+            methods:
+            {
+                /*
+                The distance function used here is based on work found at: 
+                https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+                */
+                distance: function(lat, lon)
+                {
+                let r = 6371
+                let latDist = (this.latitude - lat) * (Math.PI/180)
+                let lonDist = (this.longitude - lon) * (Math.PI/180)
+                let a = Math.sin(latDist/2) * Math.sin(latDist/2) + Math.cos((lat) * (Math.PI/180)) * Math.cos((this.latitude) * (Math.PI/180)) * Math.sin(lonDist/2) * Math.sin(lonDist/2)
+                let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+                let d = r * c * 0.621371
+                return d
+                },
+
+                geolocation: function()
+                {
+                navigator.geolocation.watchPosition(function (position)
+                {
+                    let x = position
+                    let xLat = x.coords.latitude
+                    let xLon = x.coords.longitude
+                    app.latitude = xLat
+                    app.longitude = xLon
+                })
+                }
+            },
+
+            beforeMount()
+            {
+                let x = this.geolocation()
+                return x
+            },
+
+            mounted: function()
+            {
+                fetch('https://utils.pauliankline.com/stops.json')
+                .then(function(response)
+                {
+                    let x = response.json();
+                    return x
+                })
+                .then(function(myJson)
+                {
+                    let x = myJson
+                    app.stops = x
+                    return x
+                });
+            }
+        })
+    </script>
+    </body>
+</html>
