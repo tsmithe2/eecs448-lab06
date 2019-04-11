@@ -19,7 +19,7 @@
                   <h5 style = "text-align: center">Number of stops <input v-model.number = "numStops" type = "number"></h5>
                   <div v-for = "stop in filteredStops" :key = "stop.id" class= "card" style = "text-align: center;">
                     <div class = "card-body">
-                      <h6 class = "card-title"> {{stop.name}} </h6>
+                      <h5 class = "card-title"> {{stop.name}} </h5>
                       <p class = "card-text"> {{stop.description}} </p>
                       <p class = "card-text"> {{stop.distance.toFixed(5)}} miles </p>
                     </div>
